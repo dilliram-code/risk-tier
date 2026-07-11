@@ -6,8 +6,11 @@ import pickle
 import pandas as pd 
 
 # import ml model
-with open("model.pkl", 'rb') as f:
-  model = pickle.load(f)
+from pathlib import Path
+
+MODEL_PATH = Path(__file__).parent / "model.pkl"
+with open(MODEL_PATH, 'rb') as f:
+    model = pickle.load(f)
 
 app = FastAPI()
 
@@ -74,19 +77,32 @@ class UserInput(BaseModel):
 
 @app.post("/predict")
 def predict_premium(data: UserInput):
-  
-  input_df = pd.DataFrame(
-    [
-      { 'bmi': data.bmi,
+
+    input_df = pd.DataFrame([{
+        'bmi': data.bmi,
         'age_group': data.age_group,
         'lifestyle_risk': data.lifestyle_risk,
         'city_tier': data.city_tier,
         'income_lpa': data.income_lpa,
         'occupation': data.occupation
-      }
-    ]
-  )
-  
-  # pass the dataframe above to the ml model
-  prediction = model.predict(input_df)[0]
-  return JSONResponse(status_code=200, content= {"predicted category": prediction})
+    }])
+
+    prediction = model.predict(input_df)[0]
+
+    # class probabilities + confidence
+    probabilities = model.predict_proba(input_df)[0]
+    class_labels = model.classes_
+    class_probs = {str(label): round(float(p), 4)
+                   for label, p in zip(class_labels, probabilities)}
+    confidence = round(float(max(probabilities)), 4)
+
+    return JSONResponse(
+        status_code=200,
+        content={
+            "response": {
+                "predicted_category": str(prediction),
+                "confidence": confidence,
+                "class_probabilities": class_probs
+            }
+        }
+    )
