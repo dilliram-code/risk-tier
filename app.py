@@ -19,3 +19,20 @@ class UserInput(BaseModel):
   smoker: Annotated[bool, Field(..., description='Smoking: Yes or No')] 
   city: Annotated[str, Field(..., description='City of the user')] 
   occupation: Annotated[Literal['','',''], Field(..., description='Occupation of the user')] 
+
+# create bmi: computed field
+@computed_field
+@property
+def bmi(self) -> float:
+  return self.weight / (self.height**2)
+
+# create lifestyle_risk: computed field
+@computed_field 
+@property 
+def lifestyle_risk(self) -> str:
+  if self.smoker and self.bmi > 30:
+    return "high"
+  elif self.smoker and self.bmi > 27:
+    return "medium"
+  else: 
+    return "low"
