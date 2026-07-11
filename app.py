@@ -36,3 +36,15 @@ def lifestyle_risk(self) -> str:
     return "medium"
   else: 
     return "low"
+
+# create age_group: computed field
+@computed_field
+@property
+def age_group(self) -> str:
+  if self.age < 25:
+    return 'young'
+  elif self.age < 45:
+    return 'adult'
+  elif self.age < 60:
+    return 'middle aged'
+  return 'senior'
