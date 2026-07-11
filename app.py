@@ -30,47 +30,47 @@ class UserInput(BaseModel):
   income_lpa: Annotated[float, Field(..., gt=0, description='Income of the user')] 
   smoker: Annotated[bool, Field(..., description='Smoking: Yes or No')] 
   city: Annotated[str, Field(..., description='City of the user')] 
-  occupation: Annotated[Literal['','',''], Field(..., description='Occupation of the user')] 
+  occupation: Annotated[Literal['retired', 'freelancer', 'student','government_job', 'business_owner', 'unemployed', 'private_job'], Field(..., description='Occupation of the user')] 
 
-# create bmi: computed field
-@computed_field
-@property
-def bmi(self) -> float:
-  return self.weight / (self.height**2)
+  # create bmi: computed field
+  @computed_field
+  @property
+  def bmi(self) -> float:
+    return self.weight / (self.height**2)
 
-# create lifestyle_risk: computed field
-@computed_field 
-@property 
-def lifestyle_risk(self) -> str:
-  if self.smoker and self.bmi > 30:
-    return "high"
-  elif self.smoker and self.bmi > 27:
-    return "medium"
-  else: 
-    return "low"
+  # create lifestyle_risk: computed field
+  @computed_field 
+  @property 
+  def lifestyle_risk(self) -> str:
+    if self.smoker and self.bmi > 30:
+      return "high"
+    elif self.smoker and self.bmi > 27:
+      return "medium"
+    else: 
+      return "low"
 
-# create age_group: computed field
-@computed_field
-@property
-def age_group(self) -> str:
-  if self.age < 25:
-    return 'young'
-  elif self.age < 45:
-    return 'adult'
-  elif self.age < 60:
-    return 'middle aged'
-  return 'senior'
+  # create age_group: computed field
+  @computed_field
+  @property
+  def age_group(self) -> str:
+    if self.age < 25:
+      return 'young'
+    elif self.age < 45:
+      return 'adult'
+    elif self.age < 60:
+      return 'middle_aged'
+    return 'senior'
 
-# create city tier: computed field
-@computed_field
-@property
-def city_tier(self) -> int:
-  if self.city in tier_1_cities:
-    return 1
-  elif self.city in tier_2_cities:
-    return 2
-  else: 
-    return 3
+  # create city tier: computed field
+  @computed_field
+  @property
+  def city_tier(self) -> int:
+    if self.city in tier_1_cities:
+      return 1
+    elif self.city in tier_2_cities:
+      return 2
+    else: 
+      return 3
 
 @app.post("/predict")
 def predict_premium(data: UserInput):
