@@ -10,6 +10,17 @@ with open("model.pkl", 'rb') as f:
 
 app = FastAPI()
 
+# list of the tier 1 and tier 2 cities
+tier_1_cities = ["Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata", "Hyderabad", "Pune"]
+tier_2_cities = [
+    "Jaipur", "Chandigarh", "Indore", "Lucknow", "Patna", "Ranchi", "Visakhapatnam", "Coimbatore",
+    "Bhopal", "Nagpur", "Vadodara", "Surat", "Rajkot", "Jodhpur", "Raipur", "Amritsar", "Varanasi",
+    "Agra", "Dehradun", "Mysore", "Jabalpur", "Guwahati", "Thiruvananthapuram", "Ludhiana", "Nashik",
+    "Allahabad", "Udaipur", "Aurangabad", "Hubli", "Belgaum", "Salem", "Vijayawada", "Tiruchirappalli",
+    "Bhavnagar", "Gwalior", "Dhanbad", "Bareilly", "Aligarh", "Gaya", "Kozhikode", "Warangal",
+    "Kolhapur", "Bilaspur", "Jalandhar", "Noida", "Guntur", "Asansol", "Siliguri"
+]
+
 # pydantic model to validate input data
 class UserInput(BaseModel):
   age: Annotated[int, Field(..., gt=0, lt=120, description='Age of the user')] 
@@ -48,3 +59,9 @@ def age_group(self) -> str:
   elif self.age < 60:
     return 'middle aged'
   return 'senior'
+
+# create city tier: computed field
+@computed_field
+@property
+def city_tier(self) -> int:
+  
