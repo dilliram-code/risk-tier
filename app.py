@@ -1,4 +1,5 @@
 from fastapi import FastAPI 
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, computed_field
 from typing import Literal, Optional, Annotated
 import pickle 
@@ -87,4 +88,5 @@ def predict_premium(data: UserInput):
   )
   
   # pass the dataframe above to the ml model
-  model.predict(input_df)
+  prediction = model.predict(input_df)[0]
+  return JSONResponse(status_code=200, content= {"predicted category": prediction})
